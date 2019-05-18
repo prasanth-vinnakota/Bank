@@ -19,20 +19,49 @@ def user_choice():
 
 
 def dashboard(choice):
+
     if choice == 1:
         print("\n\t\t\t---Register your details---")
         name = input("Name: ")
-        age = int(input("Age: "))
+
+        while True:
+            try:
+                age = int(input("Age: "))
+                break
+
+            except ValueError:
+                print("\n---Age must be a number---")
+
         city = input("City: ")
         account_type = input("Type of account: ")
-        amount = int(input("Initial deposited amount: "))
-        account_no = int(input("Account no: "))
+
+        while True:
+            try:
+                amount = int(input("Initial deposited amount: "))
+                break
+            except ValueError:
+                print("\n---Amount must be a number---")
+
+        while True:
+            try:
+                account_no = int(input("Account no: "))
+
+                if account_no in bank_data:
+                    print("\n---Account number already taken---\n")
+
+                else:
+                    password = input("Enter password: ")
+                    break
+
+            except ValueError:
+                print("\n---Account number must ba a number---")
 
         user_data['name'] = name
         user_data['age'] = age
         user_data['city'] = city
         user_data['account_type'] = account_type
         user_data['amount'] = amount
+        user_data['password'] = password
 
         bank_data[account_no] = user_data
 
@@ -41,16 +70,27 @@ def dashboard(choice):
         dashboard(choice)
 
     elif choice == 2:
-        account_no = int(input("Account no: "))
+
+        account_no = None
+
+        try:
+            account_no = int(input("Account no: "))
+        except ValueError:
+            print("\n---Account number must be number---")
+            user_choice()
 
         if account_no in bank_data:
-            print("\n---Login successful---")
-            home(account_no, choice)
+            password = input("Password: ")
+            if password == bank_data[account_no]['password']:
+                print("\n---Login successful---\n")
+                home(account_no, choice)
+            else:
+                print("\n---Wrong password---\n")
+                user_choice()
 
         else:
-            print("No account found with account no.{}\n\n".format(account_no))
+            print("\n---No account found with account no.{}---\n".format(account_no))
             user_choice()
-            dashboard(choice)
 
     elif choice == 3:
         print('\t\t\t---Application closed---')
@@ -63,6 +103,7 @@ def dashboard(choice):
 
 def home(account_no, choice):
     print("\n\t\t\t--- Dashboard ---")
+
     login_choice = int(input("\nOptions to choice: "
                              "\n1.Balance enquiry"
                              "\n2.Deposit amount"
@@ -75,14 +116,30 @@ def home(account_no, choice):
         home(account_no, choice)
 
     elif login_choice == 2:
-        deposited_amount = int(input("Enter amount: "))
+
+        deposited_amount = None
+
+        try:
+            deposited_amount = int(input("Enter amount: "))
+
+        except ValueError:
+            print("\n---Amount must be a number---")
+            home(account_no, choice)
+
         bank_data[account_no]['amount'] += deposited_amount
         print("\n{} is credited to your account {}.\nAvailable balance is {}"
               .format(deposited_amount, account_no, bank_data[account_no]['amount']))
         home(account_no, choice)
 
     elif login_choice == 3:
-        withdraw_amount = int(input("Enter amount"))
+
+        withdraw_amount = None
+
+        try:
+            withdraw_amount = int(input("Enter amount"))
+        except ValueError:
+            print("\n---Amount must be a number")
+            home(account_no, choice)
 
         if withdraw_amount > bank_data[account_no]['amount']:
             print("Insufficient Balance")
